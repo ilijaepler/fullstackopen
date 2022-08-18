@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import personService from './services/persons'
+import './index.css'
 
 const Person = ({ name, number, deleteFunction }) => {
   return(
@@ -34,12 +35,26 @@ const PersonForm = ({ onSubmit, newName, onNameChange, newNumber, onNumberChange
   )
 }
 
+const Notification = ({ message, flag }) => {
+  if (message === '') {
+    return null
+  }
+
+  return (
+    <div className={flag}>
+      {message}
+    </div>
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([])
   const [filteredPersons, setFilteredPersons] = useState(persons)
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [notificationMessage, setNotificationMessage] = useState('')
+  const [notificationFlag, setNotificationFlag] = useState('notification')
 
   useEffect(()=>{
     personService.getAll()
@@ -81,6 +96,16 @@ const App = () => {
             setPersons(persons.map(person => person.id !== found.id ? person : returnedPerson))
             setFilteredPersons(filteredPersons.map(person => person.id !== found.id ? person : returnedPerson))
           })
+          .catch(error => {
+            setNotificationFlag('error')
+            setNotificationMessage(
+              `Person '${found.name}' was already removed from server`
+            )
+            setTimeout(() => {
+              setNotificationFlag('notification')
+              setNotificationMessage('')
+            }, 5000)
+          })
         
         setNewName('')
         setNewNumber('')
@@ -96,6 +121,10 @@ const App = () => {
           setFilteredPersons(filteredPersons.concat(returnedPerson))
           setNewName('')
           setNewNumber('')
+          setNotificationMessage(`Added ${returnedPerson.name}`)
+          setTimeout(()=>{
+            setNotificationMessage('')
+          }, 5000)
         })
     }
   }
@@ -119,6 +148,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notificationMessage} flag={notificationFlag}/>
       <Filter filter={filter} onFilterChange={handleFilterChange}/>
       <h3>add a new</h3>
       <PersonForm onSubmit={addPerson} newName={newName} onNameChange={handleNewNameChange} newNumber={newNumber} onNumberChange={handleNewNumberChange}/>

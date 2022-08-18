@@ -16,9 +16,14 @@
       "id": 3
     },
     {
-      "name": "ilija",
-      "number": "12345",
-      "id": 4
+      "name": "test",
+      "number": "1233",
+      "id": 6
+    },
+    {
+      "name": "Ilija",
+      "number": "1234",
+      "id": 7
     }
   ]
 }
