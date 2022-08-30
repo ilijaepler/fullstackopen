@@ -98,13 +98,13 @@ const App = () => {
           })
           .catch(error => {
             setNotificationFlag('error')
-            setNotificationMessage(
-              `Person '${found.name}' was already removed from server`
-            )
-            setTimeout(() => {
-              setNotificationFlag('notification')
-              setNotificationMessage('')
-            }, 5000)
+              setNotificationMessage(
+                `Person '${found.name}' was already removed from server`
+              )
+              setTimeout(() => {
+                setNotificationFlag('notification')
+                setNotificationMessage('')
+              }, 5000)
           })
         
         setNewName('')
@@ -125,6 +125,19 @@ const App = () => {
           setTimeout(()=>{
             setNotificationMessage('')
           }, 5000)
+        })
+        .catch(error => {
+          setNotificationFlag('error')
+          setNotificationMessage(
+            `Name should be at least 3 characters long!`
+          )
+          setTimeout(() => {
+            setNotificationFlag('notification')
+            setNotificationMessage('')
+          }, 5000)
+
+          setNewName('')
+          setNewNumber('')
         })
     }
   }
