@@ -13,7 +13,7 @@ beforeEach(async () => {
     
     const promiseArray = blogObjects.map(blog => blog.save())
     await Promise.all(promiseArray)
-})
+}, 100000)
 
 test('there are correct number of notes', async() => {
     await api
@@ -91,6 +91,44 @@ test('a blog without title and url cannot be added to the DB', async () => {
     const blogsAtEnd = await helper.blogsInDb()
 
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+})
+
+test('a blog can be updated', async () => {
+    const id = helper.initialBlogs[0]._id
+
+    const newBlog = {
+        title: "UpdatedTest",
+        author: "UpdatedAuthor",
+        url: "http://www.updatetest.com",
+        likes: 50
+    }
+
+    await api.put(`/api/blogs/${id}`).send(newBlog)
+
+    const blogsAtEnd = await helper.blogsInDb()
+
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+
+    const titles = blogsAtEnd.map(b=>b.title)
+    console.log(`Titles ${titles}`)
+
+    expect(titles).toContain('UpdatedTest')
+})
+
+test('a blog can be deleted', async () => {
+    const id = helper.initialBlogs[0]._id
+
+    await api
+        .delete(`/api/blogs/${id}`)
+        .expect(204)
+    
+    const blogsAtEnd = await helper.blogsInDb()
+
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1)
+
+    const titles = blogsAtEnd.map(b=>b.title)
+
+    expect(titles).not.toContain(helper.initialBlogs[0].title)
 })
 
 afterAll(() => {
